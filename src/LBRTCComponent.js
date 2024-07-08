@@ -6,7 +6,6 @@ const LBRTCComponent = ({ threshold = 20 }) => {
     const [currentVolume, setCurrentVolume] = useState(0);
     const [displayedVolume, setDisplayedVolume] = useState(0);
     const volumeRef = useRef(currentVolume);
-    const displayRef = useRef(displayedVolume);
 
     useEffect(() => {
         volumeRef.current = currentVolume;
@@ -15,7 +14,6 @@ const LBRTCComponent = ({ threshold = 20 }) => {
     useEffect(() => {
         const interval = setInterval(() => {
             setDisplayedVolume(volumeRef.current);
-            displayRef.current = displayedVolume;
         }, 4000);
 
         return () => clearInterval(interval);
