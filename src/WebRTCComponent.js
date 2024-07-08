@@ -1,111 +1,33 @@
-// src/WebRTCComponent.js
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import SimplePeer from 'simple-peer';
-import useUserMedia from './hooks/useUserMedia';
-import io from 'socket.io-client';
+import { useState, useEffect, useRef } from 'react';
+import VolumeDetector from './AudioDetector';
 import VideoPlayer from './VideoPlayer';
 
-const socket = io('http://localhost:5000');
-
-const WebRTCComponent = () => {
-    const [peers, setPeers] = useState([]);
-    const [isAudioDetected, setIsAudioDetected] = useState(false);
-    const { mediaStream: userMedia, error } = useUserMedia({ video: true, audio: true });
-    const peerRefs = useRef({});
-    const audioTimeout = useRef(null);
+const WebRTCComponent = ({ threshold = 20 }) => {
+    const [currentVolume, setCurrentVolume] = useState(0);
+    const [displayedVolume, setDisplayedVolume] = useState(0);
+    const volumeRef = useRef(currentVolume);
+    const displayRef = useRef(displayedVolume);
 
     useEffect(() => {
-        if (userMedia) {
-            socket.emit('join', 'roomId'); // Replace 'roomId' with a dynamic room ID if needed
-        }
-    }, [userMedia]);
-
-    const addPeer = useCallback((peerId, initiator = false) => {
-        const peer = new SimplePeer({
-            initiator,
-            trickle: false,
-            stream: userMedia,
-        });
-
-        peer.on('signal', (data) => {
-            socket.emit('signal', { peerId, signalData: data });
-        });
-
-        peer.on('stream', (remoteStream) => {
-            const videoElement = document.getElementById(peerId);
-            if (videoElement) {
-                videoElement.srcObject = remoteStream;
-            }
-        });
-
-        peerRefs.current[peerId] = peer;
-        setPeers((prevPeers) => [...prevPeers, peerId]);
-    }, [userMedia]);
-
-    const handleAudioDetection = useCallback(() => {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const mediaStreamSource = audioContext.createMediaStreamSource(userMedia);
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 2048;
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        mediaStreamSource.connect(analyser);
-
-        const detectAudio = () => {
-            analyser.getByteFrequencyData(dataArray);
-            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-
-            if (average > 10) {
-                if (audioTimeout.current) {
-                    clearTimeout(audioTimeout.current);
-                }
-                setIsAudioDetected(true);
-                audioTimeout.current = setTimeout(() => {
-                    setIsAudioDetected(false);
-                }, 2000); // Maintain video on for at least 2 seconds
-            }
-
-            requestAnimationFrame(detectAudio);
-        };
-
-        detectAudio();
-    }, [userMedia]);
+        volumeRef.current = currentVolume;
+    }, [currentVolume]);
 
     useEffect(() => {
-        socket.on('new-peer', (peerId) => {
-            addPeer(peerId, false);
-        });
+        const interval = setInterval(() => {
+            setDisplayedVolume(volumeRef.current);
+            displayRef.current = displayedVolume;
+        }, 4000);
 
-        socket.on('signal', ({ peerId, signalData }) => {
-            if (peerRefs.current[peerId]) {
-                peerRefs.current[peerId].signal(signalData);
-            }
-        });
+        return () => clearInterval(interval);
+    }, []);
 
-        socket.on('peer-disconnected', (peerId) => {
-            if (peerRefs.current[peerId]) {
-                peerRefs.current[peerId].destroy();
-                delete peerRefs.current[peerId];
-                setPeers((prevPeers) => prevPeers.filter((id) => id !== peerId));
-            }
-        });
-    }, [addPeer]);
-
-    useEffect(() => {
-        if (userMedia) {
-            handleAudioDetection();
-        }
-    }, [userMedia, handleAudioDetection]);
-
-    if (error) {
-        return <div>Error accessing media devices: {error.message}</div>;
-    }
 
     return (
         <div>
-            <VideoPlayer id="local-video" stream={userMedia} isAudioDetected={isAudioDetected} muted />
-            {peers.map((peerId) => (
-                <VideoPlayer key={peerId} id={peerId} stream={peerRefs.current[peerId]?.remoteStream} />
-            ))}
+            <h2>Current Volume: {currentVolume}</h2>
+            <h2>Displayed Volume: {displayedVolume}</h2>
+            <VolumeDetector onVolumeChange={setCurrentVolume} />
+            <VideoPlayer isAudioDetected={true} muted={true} />
         </div>
     );
 };
