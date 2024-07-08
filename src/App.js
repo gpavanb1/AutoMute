@@ -1,11 +1,11 @@
 // src/App.js
 import React from 'react';
-import WebRTCComponent from './WebRTCComponent';
+import LBRTCComponent from './LBRTCComponent';
 
 const App = () => {
   return (
     <div className="App">
-      <WebRTCComponent />
+      <LBRTCComponent />
     </div>
   );
 };
