@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-const VolumeDetector = ({ fftSize = 256, onVolumeChange }) => {
+const VolumeDetector = ({ fftSize, onVolumeChange }) => {
     const [isRunning, setIsRunning] = useState(false);
 
     const startAudioContext = useCallback(() => {
@@ -12,7 +12,7 @@ const VolumeDetector = ({ fftSize = 256, onVolumeChange }) => {
             .then((stream) => {
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
-                analyser.fftSize = 256;
+                analyser.fftSize = fftSize;
 
                 const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
@@ -41,7 +41,7 @@ const VolumeDetector = ({ fftSize = 256, onVolumeChange }) => {
                 audioContext.close();
             }
         };
-    }, [onVolumeChange]);
+    }, [fftSize, onVolumeChange]);
 
     useEffect(() => {
         if (isRunning) {

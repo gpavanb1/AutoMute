@@ -1,95 +1,20 @@
-# LBRTC
+# AutoMute
 
+React video player component that automatically disables video when there is no video
 
-Fit time-series data with a Neural Differential Equation!
+Useful in one-many video conferencing settings such as classrooms or interactive presentations
 
-This repository contains time-series data fit capabilities using both Neural Ordinary Differential Equations and Neural Stochastic Differential Equations
+## How to execute?
 
-GPU support is packaged as part of [PyTorch](https://pytorch.org/)
+The component can then be included using `<AutoMute />
 
-## How to install and execute?
-
-Tested on Python 3.9
-
-Just run 
-```
-pip install nodefit
-```
-
-The following program illustrates a basic example
-```python
-import numpy as np
-import torch.nn as nn
-from nodefit.constants import DEVICE
-
-from nodefit.neural_ode import NeuralODE
-from nodefit.neural_sde import NeuralSDE
-
-
-###
-# DEFINE NETWORKS
-###
-
-# Neural ODE parameters
-ndim, drift_nhidden, diffusion_nhidden = 2, 10, 2
-
-drift_nn = nn.Sequential(
-    nn.Linear(ndim+1, drift_nhidden),
-    nn.Sigmoid(),
-    nn.Linear(drift_nhidden, ndim)
-).double().to(DEVICE)
-
-diffusion_nn = nn.Sequential(
-    nn.Linear(ndim+1, diffusion_nhidden),
-    nn.Sigmoid(),
-    nn.Linear(diffusion_nhidden, ndim)
-).double().to(DEVICE)
-
-###
-# PROVIDE DATA
-###
-
-# Training between data for 0 and 5 seconds
-t = np.linspace(0, 5, 10)
-# Provide data as list of lists with starting condition
-data = np.array([[...]])
-
-###
-# FIT USING NEURALODE
-###
-print('Performing fit using Neural ODE...')
-
-neural_ode = NeuralODE(drift_nn, t, data)
-neural_ode.train(2000)
-
-# # Extrapolate the training data to 10 seconds
-extra_data = neural_ode.extrapolate(10)
-neural_ode.plot(extra_data)
-
-###
-# FIT USING NEURALSDE
-###
-print('Performing fit using Neural SDE...')
-
-neural_sde = NeuralSDE(drift_nn, diffusion_nn, t, data)
-neural_sde.train(1)
-
-# # Extrapolate the training data to 10 seconds
-extra_data = neural_sde.extrapolate(10)
-neural_sde.plot(extra_data)
-
-```
-
-## Sample Output
-
-![Sample Output](anim/output.gif)
+Props for the component are
+* `fftSize`: The window size for FFT used in volume detection (default - 256)
+* `timeout`: The interval time (in milliseconds) after which the video will be disabled if volume is below threshold (default - 4000 ms)
+* `threshold`: The value for the volume above which video is triggered (default - 20)
 
 
 ## Whom to contact?
 
 Please direct your queries to [gpavanb1](http://github.com/gpavanb1)
 for any questions.
-
-## Acknowledgements
-
-This package would not be possible without the supporting packages - [torchdiffeq](https://github.com/rtqichen/torchdiffeq) and [torchsde](https://github.com/google-research/torchsde)

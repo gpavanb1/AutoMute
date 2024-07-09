@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import VolumeDetector from './AudioDetector';
 import VideoPlayer from './VideoPlayer';
 
-const AutoMute = ({ threshold = 20 }) => {
+const AutoMute = ({ fftSize = 256, threshold = 20, timeout = 4000 }) => {
     const [currentVolume, setCurrentVolume] = useState(0);
     const [displayedVolume, setDisplayedVolume] = useState(0);
     const volumeRef = useRef(currentVolume);
@@ -14,10 +14,10 @@ const AutoMute = ({ threshold = 20 }) => {
     useEffect(() => {
         const interval = setInterval(() => {
             setDisplayedVolume(volumeRef.current);
-        }, 4000);
+        }, timeout);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [timeout]);
 
 
     const isAudioDetected = currentVolume > threshold || displayedVolume > threshold;
@@ -26,7 +26,7 @@ const AutoMute = ({ threshold = 20 }) => {
         <div>
             <h2>Current Volume: {currentVolume}</h2>
             <h2>Displayed Volume: {displayedVolume}</h2>
-            <VolumeDetector onVolumeChange={setCurrentVolume} />
+            <VolumeDetector fftSize={fftSize} onVolumeChange={setCurrentVolume} />
             <VideoPlayer isAudioDetected={isAudioDetected} muted={true} />
         </div>
     );
