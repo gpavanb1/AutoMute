@@ -1,6 +1,6 @@
 # AutoMute
 
-React video player component that automatically disables video when there is no video
+React video player component that automatically disables video when there is no audio
 
 Useful in one-many video conferencing settings such as classrooms or interactive presentations
 
