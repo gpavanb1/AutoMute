@@ -1,70 +1,95 @@
-# Getting Started with Create React App
+# LBRTC
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+Fit time-series data with a Neural Differential Equation!
 
-In the project directory, you can run:
+This repository contains time-series data fit capabilities using both Neural Ordinary Differential Equations and Neural Stochastic Differential Equations
 
-### `npm start`
+GPU support is packaged as part of [PyTorch](https://pytorch.org/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## How to install and execute?
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Tested on Python 3.9
 
-### `npm test`
+Just run 
+```
+pip install nodefit
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The following program illustrates a basic example
+```python
+import numpy as np
+import torch.nn as nn
+from nodefit.constants import DEVICE
 
-### `npm run build`
+from nodefit.neural_ode import NeuralODE
+from nodefit.neural_sde import NeuralSDE
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+###
+# DEFINE NETWORKS
+###
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Neural ODE parameters
+ndim, drift_nhidden, diffusion_nhidden = 2, 10, 2
 
-### `npm run eject`
+drift_nn = nn.Sequential(
+    nn.Linear(ndim+1, drift_nhidden),
+    nn.Sigmoid(),
+    nn.Linear(drift_nhidden, ndim)
+).double().to(DEVICE)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+diffusion_nn = nn.Sequential(
+    nn.Linear(ndim+1, diffusion_nhidden),
+    nn.Sigmoid(),
+    nn.Linear(diffusion_nhidden, ndim)
+).double().to(DEVICE)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+###
+# PROVIDE DATA
+###
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Training between data for 0 and 5 seconds
+t = np.linspace(0, 5, 10)
+# Provide data as list of lists with starting condition
+data = np.array([[...]])
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+###
+# FIT USING NEURALODE
+###
+print('Performing fit using Neural ODE...')
 
-## Learn More
+neural_ode = NeuralODE(drift_nn, t, data)
+neural_ode.train(2000)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# # Extrapolate the training data to 10 seconds
+extra_data = neural_ode.extrapolate(10)
+neural_ode.plot(extra_data)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+###
+# FIT USING NEURALSDE
+###
+print('Performing fit using Neural SDE...')
 
-### Code Splitting
+neural_sde = NeuralSDE(drift_nn, diffusion_nn, t, data)
+neural_sde.train(1)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# # Extrapolate the training data to 10 seconds
+extra_data = neural_sde.extrapolate(10)
+neural_sde.plot(extra_data)
 
-### Analyzing the Bundle Size
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Sample Output
 
-### Making a Progressive Web App
+![Sample Output](anim/output.gif)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+## Whom to contact?
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Please direct your queries to [gpavanb1](http://github.com/gpavanb1)
+for any questions.
 
-### Deployment
+## Acknowledgements
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This package would not be possible without the supporting packages - [torchdiffeq](https://github.com/rtqichen/torchdiffeq) and [torchsde](https://github.com/google-research/torchsde)

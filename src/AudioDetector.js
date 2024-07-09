@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-const VolumeDetector = ({ onVolumeChange }) => {
+const VolumeDetector = ({ fftSize = 256, onVolumeChange }) => {
     const [isRunning, setIsRunning] = useState(false);
 
-    const startAudioContext = () => {
+    const startAudioContext = useCallback(() => {
         let audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let analyser = audioContext.createAnalyser();
         let microphone;
@@ -41,14 +41,14 @@ const VolumeDetector = ({ onVolumeChange }) => {
                 audioContext.close();
             }
         };
-    };
+    }, [onVolumeChange]);
 
     useEffect(() => {
         if (isRunning) {
             const cleanup = startAudioContext();
             return cleanup;
         }
-    }, [isRunning]);
+    }, [isRunning, startAudioContext]);
 
     return (
         <div>

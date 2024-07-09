@@ -1,11 +1,11 @@
 // src/App.js
 import React from 'react';
-import LBRTCComponent from './LBRTCComponent';
+import AutoMute from './AutoMute';
 
 const App = () => {
   return (
     <div className="App">
-      <LBRTCComponent />
+      <AutoMute />
     </div>
   );
 };

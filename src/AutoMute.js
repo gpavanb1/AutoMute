@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import VolumeDetector from './AudioDetector';
 import VideoPlayer from './VideoPlayer';
 
-const LBRTCComponent = ({ threshold = 20 }) => {
+const AutoMute = ({ threshold = 20 }) => {
     const [currentVolume, setCurrentVolume] = useState(0);
     const [displayedVolume, setDisplayedVolume] = useState(0);
     const volumeRef = useRef(currentVolume);
@@ -32,4 +32,4 @@ const LBRTCComponent = ({ threshold = 20 }) => {
     );
 };
 
-export default LBRTCComponent;
+export default AutoMute;
