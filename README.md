@@ -7,7 +7,7 @@ Useful in one-many video conferencing settings such as classrooms or interactive
 ## How to install?
 
 ## Demo
-![Demo](./example/automute_demo.mp4)
+![Demo](./example/automute_demo.gif)
 
 ## How to execute?
 
