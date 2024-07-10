@@ -4,6 +4,11 @@ React video player component that automatically disables video when there is no 
 
 Useful in one-many video conferencing settings such as classrooms or interactive presentations
 
+## How to install?
+
+## Demo
+![Demo](./example/automute_demo.gif)
+
 ## How to execute?
 
 The component can then be included using `<AutoMute />
