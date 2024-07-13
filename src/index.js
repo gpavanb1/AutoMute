@@ -1,17 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { useState, useEffect, useRef } from 'react';
+import VolumeDetector from './AudioDetector';
+import VideoPlayer from './VideoPlayer';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const AutoMute = ({ fftSize = 256, threshold = 20, timeout = 4000, showStats = true }) => {
+    const [currentVolume, setCurrentVolume] = useState(0);
+    const [displayedVolume, setDisplayedVolume] = useState(0);
+    const volumeRef = useRef(currentVolume);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    useEffect(() => {
+        volumeRef.current = currentVolume;
+    }, [currentVolume]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDisplayedVolume(volumeRef.current);
+        }, timeout);
+
+        return () => clearInterval(interval);
+    }, [timeout]);
+
+
+    const isAudioDetected = currentVolume > threshold || displayedVolume > threshold;
+
+    return (
+        <div>
+            {showStats && <h2>Current Volume: {currentVolume}</h2>}
+            {showStats && <h2>Displayed Volume: {displayedVolume}</h2>}
+            <VolumeDetector fftSize={fftSize} onVolumeChange={setCurrentVolume} />
+            <VideoPlayer isAudioDetected={isAudioDetected} muted={true} />
+        </div>
+    );
+};
+
+export default AutoMute;
