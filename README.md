@@ -17,7 +17,7 @@ npm install automute
 
 ## How to execute?
 
-The component can then be included using `<AutoMute />
+The component can then be included using `<AutoMute />`
 
 Props for the component are
 * `showStats`: Show the associated current volume and the volume at end of `timeout`
