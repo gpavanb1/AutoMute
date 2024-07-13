@@ -20,6 +20,7 @@ npm install automute
 The component can then be included using `<AutoMute />`
 
 Props for the component are
+* `startListening`: External trigger to enable audio detection. Must for security/privacy reasons.
 * `showStats`: Show the associated current volume and the volume at end of `timeout`
 * `fftSize`: The window size for FFT used in volume detection (default - 256)
 * `timeout`: The interval time (in milliseconds) after which the video will be disabled if volume is below threshold (default - 4000 ms)

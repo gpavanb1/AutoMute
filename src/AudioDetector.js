@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-const VolumeDetector = ({ fftSize, onVolumeChange }) => {
-    const [isRunning, setIsRunning] = useState(false);
+const VolumeDetector = ({ fftSize, onVolumeChange, isRunning, showStats }) => {
 
     const startAudioContext = useCallback(() => {
         let audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -24,7 +23,6 @@ const VolumeDetector = ({ fftSize, onVolumeChange }) => {
                 };
 
                 updateVolume();
-                setIsRunning(true);
             })
             .catch((err) => {
                 console.error('Error accessing microphone:', err);
@@ -52,9 +50,7 @@ const VolumeDetector = ({ fftSize, onVolumeChange }) => {
 
     return (
         <div>
-            <button onClick={startAudioContext} disabled={isRunning}>
-                {isRunning ? 'Listening...' : 'Start Listening'}
-            </button>
+            {showStats && <h2>{isRunning ? 'Listening...' : 'Start Listening'}</h2>}
         </div>
     );
 };
