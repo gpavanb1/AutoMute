@@ -1,4 +1,5 @@
 # AutoMute
+![downloads](https://img.shields.io/npm/dy/automute)
 
 React video player component that automatically disables video when there is no audio
 
