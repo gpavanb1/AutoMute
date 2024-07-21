@@ -25,6 +25,7 @@ Props for the component are
 * `fftSize`: The window size for FFT used in volume detection (default - 256)
 * `timeout`: The interval time (in milliseconds) after which the video will be disabled if volume is below threshold (default - 4000 ms)
 * `threshold`: The value for the volume above which video is triggered (default - 20)
+* `muteOnlyAudio`: Enable to continuously transmit video. On disabling, video is transmitted only when audio detection is on
 
 
 ## Whom to contact?
