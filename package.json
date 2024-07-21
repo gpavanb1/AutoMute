@@ -1,6 +1,6 @@
 {
   "name": "automute",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Auto-muting React video stream component for low bandwidths ",
   "author": "gpavanb1",
   "license": "MIT",
